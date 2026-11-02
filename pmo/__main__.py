@@ -60,6 +60,10 @@ def executar(fonte: str, com_ia: bool, pasta: Path) -> dict:
             f.write(relatorio)
 
     print(f"[ok] {len(achados)} achados · custo US$ {medidor.total_usd:.4f} · arquivos em {pasta}")
+    if os.environ.get("GITHUB_ACTIONS"):
+        # Aviso visível na página da execução (os logs exigem login); nunca mostra a chave.
+        modo = "com IA" if com_ia else "sem IA (secret ANTHROPIC_API_KEY não encontrado ou --sem-ia)"
+        print(f"::notice title=Agente PMO::{len(achados)} achados, {modo}, custo US$ {medidor.total_usd:.4f}")
     return execucao
 
 
