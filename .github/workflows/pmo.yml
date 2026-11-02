@@ -1,0 +1,50 @@
+name: Agente PMO
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sem_ia:
+        description: "Rodar sem chamar o Claude"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "0 10 * * 1" # segunda-feira, 07h em Brasília
+
+permissions:
+  contents: read
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt pytest
+
+      - name: Testes
+        run: pytest -q
+
+      - name: Rodar o pipeline
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ "${{ inputs.sem_ia }}" = "true" ]; then
+            python -m pmo --fonte exemplo --sem-ia
+          else
+            python -m pmo --fonte exemplo
+          fi
+
+      - name: Publicar dashboard
+        uses: actions/upload-artifact@v4
+        with:
+          name: dashboard-pmo
+          path: saida/
+          retention-days: 30

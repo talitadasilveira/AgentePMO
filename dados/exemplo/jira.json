@@ -1,0 +1,35 @@
+{
+  "descricao": "Jira fictício de PAG (Pagamentos) e TIG (App) com problemas plantados de propósito para validar cada checagem.",
+  "data_referencia": "2026-11-02",
+  "releases": [
+    {"nome": "PAG 2026.11.2", "board": "PAG", "data": "2026-11-12", "itens": ["PAG-412", "PAG-405"]},
+    {"nome": "TIG 4.18.0", "board": "TIG", "data": "2026-11-14", "itens": ["TIG-190"]},
+    {"nome": "PAG 2026.11.3", "board": "PAG", "data": "2026-11-26", "itens": ["PAG-430"]}
+  ],
+  "itens": [
+    {"chave": "INI-01", "board": "PAG", "tipo": "Iniciativa", "titulo": "Pix recorrente", "status": "Em andamento", "responsavel": "Produto Pagamentos", "inicio": "2026-09-01", "fim": "2026-12-15", "pai": null, "dod": "Pix recorrente em produção para 100% da base", "estimativa": null, "flag": false, "depende_de": [], "comentarios": []},
+    {"chave": "INI-02", "board": "TIG", "tipo": "Iniciativa", "titulo": "Novo onboarding", "status": "Em andamento", "responsavel": "Produto App", "inicio": "2026-09-15", "fim": "2026-12-20", "pai": null, "dod": "Onboarding v2 com conversão medida", "estimativa": null, "flag": false, "depende_de": [], "comentarios": []},
+
+    {"chave": "PAG-412", "board": "PAG", "tipo": "Epico", "titulo": "Pix recorrente", "status": "Em andamento", "responsavel": "Ana Souza", "inicio": "2026-10-01", "fim": "2026-11-12", "pai": "INI-01", "dod": "Agendamento e cobrança recorrente funcionando em produção", "estimativa": 34, "flag": false, "depende_de": ["TIG-188"], "comentarios": []},
+    {"chave": "TIG-188", "board": "TIG", "tipo": "Epico", "titulo": "Tela de autorização do Pix recorrente no app", "status": "Em andamento", "responsavel": "Bruno Lima", "inicio": "2026-10-10", "fim": "2026-11-18", "pai": "INI-01", "dod": "Usuário autoriza e cancela recorrência pelo app", "estimativa": 21, "flag": false, "depende_de": [], "comentarios": []},
+    {"chave": "PAG-405", "board": "PAG", "tipo": "Epico", "titulo": "Limite diário do Pix recorrente", "status": "Em andamento", "responsavel": "Ana Souza", "inicio": "2026-10-05", "fim": "2026-11-10", "pai": "INI-01", "dod": "Limite aplicado no backend e auditável", "estimativa": 8, "flag": false, "depende_de": [], "comentarios": [
+      {"autor": "Ana Souza", "data": "2026-10-20", "texto": "Regra fechada com o time: o limite do Pix recorrente é de R$ 1.000 por dia por usuário."}
+    ]},
+    {"chave": "TIG-190", "board": "TIG", "tipo": "Epico", "titulo": "Tela de limites do Pix recorrente", "status": "Em andamento", "responsavel": "Bruno Lima", "inicio": "2026-10-12", "fim": "2026-11-13", "pai": "INI-01", "dod": "Usuário vê e ajusta o limite no app", "estimativa": 8, "flag": false, "depende_de": ["PAG-399"], "comentarios": [
+      {"autor": "Bruno Lima", "data": "2026-10-22", "texto": "Layout aprovado mostrando limite máximo de R$ 500 por dia, conforme alinhado na review."}
+    ]},
+    {"chave": "PAG-399", "board": "PAG", "tipo": "Epico", "titulo": "API antiga de limites", "status": "Cancelado", "responsavel": null, "inicio": "2026-09-10", "fim": null, "pai": "INI-01", "dod": null, "estimativa": null, "flag": false, "depende_de": [], "comentarios": []},
+    {"chave": "PAG-377", "board": "PAG", "tipo": "Epico", "titulo": "Conciliação com parceiro bancário", "status": "Em andamento", "responsavel": "Carla Mendes", "inicio": "2026-10-01", "fim": "2026-11-20", "pai": "INI-01", "dod": "Conciliação diária automática sem divergência", "estimativa": 13, "flag": false, "depende_de": [], "comentarios": [
+      {"autor": "Carla Mendes", "data": "2026-10-29", "texto": "Seguimos aguardando liberação do parceiro bancário para acessar o ambiente de homologação."}
+    ]},
+    {"chave": "PAG-398", "board": "PAG", "tipo": "Epico", "titulo": "API de cadastro de chaves", "status": "Em andamento", "responsavel": "Diego Rocha", "inicio": "2026-10-15", "fim": "2026-12-02", "pai": "INI-02", "dod": "API publicada com contrato versionado", "estimativa": 13, "flag": false, "depende_de": [], "comentarios": []},
+    {"chave": "TIG-201", "board": "TIG", "tipo": "Epico", "titulo": "Onboarding v2", "status": "Em andamento", "responsavel": "Elisa Prado", "inicio": "2026-10-20", "fim": "2026-11-25", "pai": "INI-02", "dod": "Novo fluxo de cadastro em produção", "estimativa": 21, "flag": false, "depende_de": ["PAG-398"], "comentarios": []},
+    {"chave": "TIG-150", "board": "TIG", "tipo": "Epico", "titulo": "Notificações push de sorteio", "status": "Em andamento", "responsavel": "Bruno Lima", "inicio": "2026-09-20", "fim": "2026-10-28", "pai": "INI-02", "dod": "Push enviado no início e no resultado de cada sorteio", "estimativa": 13, "flag": false, "depende_de": [], "comentarios": []},
+    {"chave": "TIG-151", "board": "TIG", "tipo": "Historia", "titulo": "Push no início do sorteio", "status": "Concluído", "responsavel": "Bruno Lima", "inicio": "2026-09-20", "fim": "2026-10-10", "pai": "TIG-150", "dod": null, "estimativa": 5, "flag": false, "depende_de": [], "comentarios": []},
+    {"chave": "TIG-152", "board": "TIG", "tipo": "Historia", "titulo": "Push no resultado do sorteio", "status": "Em andamento", "responsavel": "Bruno Lima", "inicio": "2026-10-11", "fim": "2026-11-05", "pai": "TIG-150", "dod": null, "estimativa": 5, "flag": false, "depende_de": [], "comentarios": []},
+    {"chave": "TIG-153", "board": "TIG", "tipo": "Historia", "titulo": "Preferências de notificação", "status": "A fazer", "responsavel": "Bruno Lima", "inicio": "2026-10-20", "fim": "2026-10-28", "pai": "TIG-150", "dod": null, "estimativa": 3, "flag": false, "depende_de": [], "comentarios": []},
+    {"chave": "PAG-420", "board": "PAG", "tipo": "Epico", "titulo": "Relatório de chargeback", "status": "A fazer", "responsavel": "Diego Rocha", "inicio": "2026-11-10", "fim": "2026-12-10", "pai": "INI-01", "dod": null, "estimativa": null, "flag": false, "depende_de": [], "comentarios": []},
+    {"chave": "PAG-430", "board": "PAG", "tipo": "Epico", "titulo": "Extrato do Pix recorrente", "status": "Em andamento", "responsavel": "Ana Souza", "inicio": "2026-11-01", "fim": "2026-11-22", "pai": "INI-01", "dod": "Extrato mostra cada cobrança recorrente", "estimativa": 8, "flag": false, "depende_de": ["TIG-195"], "comentarios": []},
+    {"chave": "TIG-195", "board": "TIG", "tipo": "Epico", "titulo": "Tela de extrato do Pix recorrente", "status": "Em andamento", "responsavel": "Elisa Prado", "inicio": "2026-11-01", "fim": "2026-11-22", "pai": "INI-01", "dod": "Usuário vê o extrato no app", "estimativa": 8, "flag": false, "depende_de": ["PAG-430"], "comentarios": []}
+  ]
+}

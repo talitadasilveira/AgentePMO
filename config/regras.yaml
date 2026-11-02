@@ -1,0 +1,28 @@
+# Regras da PMO usadas pelas checagens.
+# A área de projetos pode editar este arquivo sem mexer no código.
+
+status_concluido: ["Concluído", "Done"]
+status_cancelado: ["Cancelado", "Cancelled"]
+
+# Severidade padrão de cada checagem (alta, media, baixa).
+# A análise do Claude pode subir ou descer conforme o impacto cruzado.
+checagens:
+  DT-01: {ativa: true, severidade: alta, titulo: "Item vencido e ainda aberto"}
+  DT-02: {ativa: true, severidade: media, titulo: "História com data além da data do épico"}
+  DP-01: {ativa: true, severidade: alta, titulo: "Dependência termina depois do item que depende dela"}
+  DP-02: {ativa: true, severidade: media, titulo: "Dependência solta: item cancelado, sem responsável ou sem data"}
+  DP-03: {ativa: true, severidade: alta, titulo: "Ciclo de dependências"}
+  DY-01: {ativa: true, severidade: alta, titulo: "Deploy marcado antes da conclusão das dependências"}
+  RG-01: {ativa: true, severidade: baixa, titulo: "Campos obrigatórios ausentes"}
+  AL-02: {ativa: true, severidade: alta, titulo: "Comentário indica bloqueio sem flag no Jira"}
+
+# Campos que todo épico precisa ter preenchidos (RG-01).
+campos_obrigatorios_epico: ["responsavel", "dod", "estimativa", "pai"]
+
+# Palavras que marcam um comentário como possível bloqueio (AL-02).
+# O código só levanta o candidato; quem confirma é a triagem do Claude.
+palavras_bloqueio: ["aguardando", "bloqueado", "bloqueio", "impedido", "impedimento", "travado", "parado", "dependemos"]
+
+# Achados que a revisão humana mandou suprimir para sempre (descartes recorrentes).
+# Formato: id do achado, como aparece no dashboard.
+excecoes: []
