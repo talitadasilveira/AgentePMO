@@ -3,6 +3,7 @@
 import argparse
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -27,11 +28,18 @@ def executar(fonte: str, com_ia: bool, pasta: Path) -> dict:
     achados = checagens.rodar_checagens(snapshot, regras, carregar_decisoes())
     print(f"[checagens] {len(achados)} achados em código")
 
+    erro_ia = None
     if com_ia:
-        leitura = triagem.triar(checagens.comentarios_para_triagem(snapshot, regras), medidor)
-        achados = triagem.aplicar_triagem(achados, leitura, snapshot, regras)
-        print(f"[triagem] {len(leitura.get('conflitos', []))} conflitos; {len(achados)} achados após a triagem")
-        resultado = analise.analisar(achados, medidor)
+        try:
+            leitura = triagem.triar(checagens.comentarios_para_triagem(snapshot, regras), medidor)
+            achados = triagem.aplicar_triagem(achados, leitura, snapshot, regras)
+            print(f"[triagem] {len(leitura.get('conflitos', []))} conflitos; {len(achados)} achados após a triagem")
+            resultado = analise.analisar(achados, medidor)
+        except Exception as e:  # falha da API não pode impedir o dashboard
+            erro_ia = re.sub(r"sk-ant-[\w-]+", "sk-ant-***", f"{type(e).__name__}: {e}")[:600]
+            print(f"[ia] falhou, seguindo sem IA: {erro_ia}")
+            com_ia = False
+            resultado = analise.analise_padrao(achados)
     else:
         print("[ia] sem ANTHROPIC_API_KEY: pulando triagem e análise")
         resultado = analise.analise_padrao(achados)
@@ -62,8 +70,12 @@ def executar(fonte: str, com_ia: bool, pasta: Path) -> dict:
     print(f"[ok] {len(achados)} achados · custo US$ {medidor.total_usd:.4f} · arquivos em {pasta}")
     if os.environ.get("GITHUB_ACTIONS"):
         # Aviso visível na página da execução (os logs exigem login); nunca mostra a chave.
-        modo = "com IA" if com_ia else "sem IA (secret ANTHROPIC_API_KEY não encontrado ou --sem-ia)"
-        print(f"::notice title=Agente PMO::{len(achados)} achados, {modo}, custo US$ {medidor.total_usd:.4f}")
+        if erro_ia:
+            print(f"::error title=Agente PMO - falha na IA::{erro_ia.replace(chr(10), ' ')}")
+        else:
+            modo = "com IA" if com_ia else "sem IA (secret ANTHROPIC_API_KEY não encontrado ou --sem-ia)"
+            print(f"::notice title=Agente PMO::{len(achados)} achados, {modo}, custo US$ {medidor.total_usd:.4f}")
+    execucao["erro_ia"] = erro_ia
     return execucao
 
 
@@ -73,8 +85,8 @@ def main(argv=None) -> int:
     parser.add_argument("--sem-ia", action="store_true", help="não chama o Claude")
     parser.add_argument("--saida", default=str(RAIZ / "saida"))
     args = parser.parse_args(argv)
-    executar(args.fonte, ia_disponivel() and not args.sem_ia, Path(args.saida))
-    return 0
+    execucao = executar(args.fonte, ia_disponivel() and not args.sem_ia, Path(args.saida))
+    return 1 if execucao["erro_ia"] else 0
 
 
 if __name__ == "__main__":
