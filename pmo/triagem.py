@@ -8,6 +8,7 @@ Sem chave de API, a triagem é pulada e os candidatos do código seguem como est
 
 import json
 
+from .analise import com_processo
 from .ia import MODELO_TRIAGEM, perguntar
 
 SISTEMA = """Você faz a triagem de comentários do Jira para a PMO de uma empresa de tecnologia.
@@ -24,11 +25,11 @@ Responda apenas com JSON neste formato:
  "conflitos": [{"itens": ["...", "..."], "descricao": "uma frase com os valores de cada lado"}]}"""
 
 
-def triar(comentarios: list, medidor) -> dict:
+def triar(comentarios: list, medidor, processo: str = "") -> dict:
     if not comentarios:
         return {"itens": [], "conflitos": []}
     conteudo = "Itens com comentários:\n" + json.dumps(comentarios, ensure_ascii=False, indent=1)
-    return perguntar("triagem", MODELO_TRIAGEM, SISTEMA, conteudo, medidor,
+    return perguntar("triagem", MODELO_TRIAGEM, com_processo(SISTEMA, processo), conteudo, medidor,
                      esforco="low", max_tokens=4000)
 
 

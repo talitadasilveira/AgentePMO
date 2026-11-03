@@ -7,34 +7,30 @@ import re
 import sys
 from pathlib import Path
 
-from . import analise, checagens, coleta, dashboard, triagem
+from . import analise, aprendizado, checagens, coleta, dashboard, triagem
 from .ia import Medidor, ia_disponivel
 
 RAIZ = Path(__file__).resolve().parent.parent
-DECISOES = RAIZ / "dados" / "decisoes.json"
-
-
-def carregar_decisoes() -> list:
-    if not DECISOES.exists():
-        return []
-    with open(DECISOES, encoding="utf-8") as f:
-        return json.load(f)
 
 
 def executar(fonte: str, com_ia: bool, pasta: Path) -> dict:
     medidor = Medidor()
     snapshot = coleta.coletar(fonte)
     regras = checagens.carregar_regras()
-    achados = checagens.rodar_checagens(snapshot, regras, carregar_decisoes())
-    print(f"[checagens] {len(achados)} achados em código")
+    decisoes = aprendizado.carregar_decisoes()
+    processo = aprendizado.carregar_processo()
+    achados = checagens.rodar_checagens(snapshot, regras, decisoes)
+    print(f"[checagens] {len(achados)} achados em código; {len(decisoes)} decisões anteriores")
 
     erro_ia = None
     if com_ia:
         try:
-            leitura = triagem.triar(checagens.comentarios_para_triagem(snapshot, regras), medidor)
+            leitura = triagem.triar(checagens.comentarios_para_triagem(snapshot, regras), medidor, processo)
             achados = triagem.aplicar_triagem(achados, leitura, snapshot, regras)
             print(f"[triagem] {len(leitura.get('conflitos', []))} conflitos; {len(achados)} achados após a triagem")
-            resultado = analise.analisar(achados, medidor)
+            exemplos = aprendizado.exemplos(decisoes, achados)
+            print(f"[analise] {len(exemplos)} decisões anteriores enviadas como exemplo")
+            resultado = analise.analisar(achados, medidor, processo, exemplos)
         except Exception as e:  # falha da API não pode impedir o dashboard
             erro_ia = re.sub(r"sk-ant-[\w-]+", "sk-ant-***", f"{type(e).__name__}: {e}")[:600]
             print(f"[ia] falhou, seguindo sem IA: {erro_ia}")
@@ -52,6 +48,7 @@ def executar(fonte: str, com_ia: bool, pasta: Path) -> dict:
         "com_ia": com_ia,
         "resumo": resultado.get("resumo", []),
         "achados": achados,
+        "calibragem": aprendizado.taxa_descarte(decisoes, regras),
         "custo": {"total_usd": medidor.total_usd, "etapas": medidor.etapas},
     }
 

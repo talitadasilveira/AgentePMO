@@ -18,6 +18,8 @@ def test_pipeline_sem_ia_gera_os_arquivos(tmp_path, monkeypatch):
     assert "DY-01:PAG-412+TIG-188" in html
     assert all(a["recomendacao"] for a in execucao["achados"])
     assert execucao["custo"]["total_usd"] == 0
+    assert any(c["calibrar"] for c in execucao["calibragem"])
+    assert "Calibragem das checagens" in (tmp_path / "relatorio.md").read_text(encoding="utf-8")
 
 
 def test_triagem_descarta_ruido_e_acrescenta_conflito():

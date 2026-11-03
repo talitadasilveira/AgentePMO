@@ -1,0 +1,76 @@
+[
+  {
+    "id": "RG-01:PAG-352",
+    "codigo": "RG-01",
+    "titulo": "Campos obrigatórios ausentes",
+    "evidencia": "PAG-352 (spike de novo adquirente) sem estimativa",
+    "recomendacao": "Pedir ao PO para completar os campos antes do refinamento.",
+    "execucao": "2026-10-26 10:01 UTC",
+    "decisao": "descartar",
+    "comentario": "De novo spike. A regra precisa ignorar épicos de spike.",
+    "responsavel": "PMO",
+    "em": "2026-10-26T13:40:00Z"
+  },
+  {
+    "id": "RG-01:TIG-138",
+    "codigo": "RG-01",
+    "titulo": "Campos obrigatórios ausentes",
+    "evidencia": "TIG-138 (tela de extrato) sem DoD e sem responsável",
+    "recomendacao": "Pedir ao PO para completar os campos antes do refinamento.",
+    "execucao": "2026-10-26 10:01 UTC",
+    "decisao": "aprovar",
+    "comentario": "Épico de entrega sem dono: PO do App assume e completa até quarta.",
+    "responsavel": "PO App",
+    "em": "2026-10-26T13:45:00Z"
+  },
+  {
+    "id": "DP-01:TIG-134+PAG-347",
+    "codigo": "DP-01",
+    "titulo": "Dependência termina depois do item que depende dela",
+    "evidencia": "TIG-134 termina em 2026-10-30, mas depende de PAG-347, que termina em 2026-11-04 (5 dias depois)",
+    "recomendacao": "Alinhar com o time da dependência se dá para antecipar, ou replanejar o item dependente.",
+    "execucao": "2026-10-26 10:01 UTC",
+    "decisao": "ajustar",
+    "comentario": "Não dá para antecipar o PAG; App replaneja para a release seguinte.",
+    "responsavel": "PMO",
+    "revisar_em": "2026-11-06",
+    "em": "2026-10-26T13:50:00Z"
+  },
+  {
+    "id": "DP-01:TIG-136+PAG-349",
+    "codigo": "DP-01",
+    "titulo": "Dependência termina depois do item que depende dela",
+    "evidencia": "TIG-136 termina em 2026-10-29, mas depende de PAG-349, que termina em 2026-10-30 (1 dia depois)",
+    "recomendacao": "Alinhar com o time da dependência se dá para antecipar, ou replanejar o item dependente.",
+    "execucao": "2026-10-26 10:01 UTC",
+    "decisao": "aprovar",
+    "comentario": "Alinhado na daily: PAG entrega dia 28.",
+    "responsavel": "PO Pagamentos",
+    "em": "2026-10-26T13:55:00Z"
+  },
+  {
+    "id": "AL-02:TIG-140",
+    "codigo": "AL-02",
+    "titulo": "Comentário indica bloqueio sem flag no Jira",
+    "evidencia": "Comentário em TIG-140: \"ficou parado ontem por falta de massa de teste\"",
+    "recomendacao": "Sinalizar o impedimento no Jira e escalar com quem destrava.",
+    "execucao": "2026-10-26 10:01 UTC",
+    "decisao": "descartar",
+    "comentario": "Comentário antigo, a massa já foi gerada. Não é bloqueio.",
+    "responsavel": "PMO",
+    "em": "2026-10-26T14:00:00Z"
+  },
+  {
+    "id": "DY-01:TIG-133+PAG-345",
+    "codigo": "DY-01",
+    "titulo": "Deploy marcado antes da conclusão das dependências",
+    "evidencia": "Release TIG 4.17.0 em 2026-10-31 inclui TIG-133, que depende de PAG-345 (fim 2026-11-03)",
+    "recomendacao": "Mover o deploy para depois da dependência ou subir com a funcionalidade desligada.",
+    "execucao": "2026-10-26 10:01 UTC",
+    "decisao": "aceitar",
+    "comentario": "Sobe com feature flag desligada, registrado no épico.",
+    "responsavel": "Tech lead App",
+    "revisar_em": "2026-11-04",
+    "em": "2026-10-26T14:05:00Z"
+  }
+]

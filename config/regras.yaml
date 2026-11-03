@@ -23,6 +23,11 @@ campos_obrigatorios_epico: ["responsavel", "dod", "estimativa", "pai"]
 # O código só levanta o candidato; quem confirma é a triagem do Claude.
 palavras_bloqueio: ["aguardando", "bloqueado", "bloqueio", "impedido", "impedimento", "travado", "parado", "dependemos"]
 
+# Calibragem: uma checagem com muitos descartes está apontando o que a área não quer ver.
+# Ela é marcada para revisar a regra quando tem pelo menos `minimo_decisoes` decididos
+# e a taxa de descarte chega a `taxa_alerta`.
+calibragem: {taxa_alerta: 0.5, minimo_decisoes: 3}
+
 # Achados que a revisão humana mandou suprimir para sempre (descartes recorrentes).
 # Formato: id do achado, como aparece no dashboard.
 excecoes: []

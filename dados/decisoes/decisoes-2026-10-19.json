@@ -1,0 +1,62 @@
+[
+  {
+    "id": "RG-01:PAG-341",
+    "codigo": "RG-01",
+    "titulo": "Campos obrigatórios ausentes",
+    "evidencia": "PAG-341 (spike de antecipação) sem estimativa e sem DoD",
+    "recomendacao": "Pedir ao PO para completar os campos antes do refinamento.",
+    "execucao": "2026-10-19 10:02 UTC",
+    "decisao": "descartar",
+    "comentario": "É spike: pelo nosso processo não leva estimativa nem DoD.",
+    "responsavel": "PMO",
+    "em": "2026-10-19T14:10:00Z"
+  },
+  {
+    "id": "RG-01:TIG-131",
+    "codigo": "RG-01",
+    "titulo": "Campos obrigatórios ausentes",
+    "evidencia": "TIG-131 (spike de biometria) sem estimativa",
+    "recomendacao": "Pedir ao PO para completar os campos antes do refinamento.",
+    "execucao": "2026-10-19 10:02 UTC",
+    "decisao": "descartar",
+    "comentario": "Spike de 1 sprint, não precisa de estimativa.",
+    "responsavel": "PMO",
+    "em": "2026-10-19T14:12:00Z"
+  },
+  {
+    "id": "DP-01:TIG-128+PAG-336",
+    "codigo": "DP-01",
+    "titulo": "Dependência termina depois do item que depende dela",
+    "evidencia": "TIG-128 termina em 2026-10-23, mas depende de PAG-336, que termina em 2026-10-24 (1 dia depois)",
+    "recomendacao": "Alinhar com o time da dependência se dá para antecipar, ou replanejar o item dependente.",
+    "execucao": "2026-10-19 10:02 UTC",
+    "decisao": "aprovar",
+    "comentario": "Mesmo 1 dia trava a release do App. PO do PAG antecipou para 22/10.",
+    "responsavel": "PO Pagamentos",
+    "em": "2026-10-19T14:20:00Z"
+  },
+  {
+    "id": "DT-01:PAG-329",
+    "codigo": "DT-01",
+    "titulo": "Item vencido e ainda aberto",
+    "evidencia": "PAG-329 venceu em 2026-10-15 e segue Em andamento (4 dias)",
+    "recomendacao": "Atualizar a data com o time ou quebrar o que falta em um novo épico.",
+    "execucao": "2026-10-19 10:02 UTC",
+    "decisao": "aprovar",
+    "comentario": "Quebrar o restante em novo épico; não esticar a data.",
+    "responsavel": "PO Pagamentos",
+    "em": "2026-10-19T14:25:00Z"
+  },
+  {
+    "id": "AL-02:PAG-333",
+    "codigo": "AL-02",
+    "titulo": "Comentário indica bloqueio sem flag no Jira",
+    "evidencia": "Comentário em PAG-333: \"aguardando credencial do parceiro bancário\"",
+    "recomendacao": "Sinalizar o impedimento no Jira e escalar com quem destrava.",
+    "execucao": "2026-10-19 10:02 UTC",
+    "decisao": "aprovar",
+    "comentario": "Bloqueio real de parceiro: flag colocada e escalado com o gerente da conta.",
+    "responsavel": "Tech lead Pagamentos",
+    "em": "2026-10-19T14:30:00Z"
+  }
+]

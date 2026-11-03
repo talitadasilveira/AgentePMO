@@ -1,8 +1,8 @@
 """Etapa 5 — dashboard de revisão (HTML estático, um arquivo só) e relatório em Markdown.
 
 O revisor registra uma decisão por achado; as decisões ficam no navegador e saem
-pelo botão "Baixar decisões" como decisoes.json, que volta para dados/decisoes.json
-e alimenta a próxima execução.
+pelo botão "Baixar decisões" como decisoes-AAAA-MM-DD.json, que vai para dados/decisoes/
+e alimenta a próxima execução (supressões, exemplos para a análise e calibragem).
 """
 
 import json
@@ -31,6 +31,13 @@ def gerar_markdown(execucao: dict) -> str:
     for a in execucao["achados"]:
         evid = a["evidencia"].replace("|", "/")
         linhas.append(f"| {ROTULO_SEV[a['severidade']]} | {a['codigo']} | {', '.join(a['itens'])} | {evid} |")
+    if execucao.get("calibragem"):
+        linhas += ["", "## Calibragem das checagens", "",
+                   "Decisões anteriores da área de projetos, por tipo de checagem.", "",
+                   "| Código | Checagem | Decididos | Descartados | Taxa de descarte | |", "| --- | --- | --- | --- | --- | --- |"]
+        for c in execucao["calibragem"]:
+            alerta = "Revisar a regra" if c["calibrar"] else ""
+            linhas.append(f"| {c['codigo']} | {c['titulo']} | {c['decididos']} | {c['descartados']} | {c['taxa']:.0%} | {alerta} |")
     if execucao["custo"]["etapas"]:
         linhas += ["", "## Tokens", "", "| Etapa | Modelo | Entrada | Saída | US$ |", "| --- | --- | --- | --- | --- |"]
         for e in execucao["custo"]["etapas"]:
@@ -88,6 +95,14 @@ input{font:inherit;font-size:14px;padding:10px 16px;border-radius:9999px;border:
 p{margin:0;line-height:1.5}
 ul{margin:0;padding-left:20px;line-height:1.5}
 .aviso{background:var(--roxo-suave);border-radius:12px;padding:12px 16px;font-size:14px}
+.rolagem{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--borda);white-space:nowrap}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--cinza)}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.barra{display:inline-block;width:80px;height:8px;border-radius:9999px;background:var(--sutil);vertical-align:middle;margin-right:8px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--roxo)}
+.barra i.alerta{background:var(--erro)}
 </style>
 </head>
 <body>
@@ -104,13 +119,16 @@ ul{margin:0;padding-left:20px;line-height:1.5}
 <div class="card kpi"><span>Custo da execução</span><strong id="k-custo"></strong></div>
 </section>
 <section class="card" aria-labelledby="t-resumo"><h2 id="t-resumo">Resumo do agente</h2><ul id="resumo"></ul></section>
+<section class="card" aria-labelledby="t-calib" id="calib" hidden><h2 id="t-calib">Calibragem das checagens</h2>
+<p style="color:var(--cinza);font-size:14px;margin-bottom:12px">Quanto das revisões anteriores a área descartou, por checagem. Taxa alta indica regra a revisar em config/regras.yaml.</p>
+<div class="rolagem"><table><thead><tr><th>Checagem</th><th class="num">Decididos</th><th class="num">Descartados</th><th>Taxa de descarte</th><th></th></tr></thead><tbody id="calib-linhas"></tbody></table></div></section>
 <section aria-labelledby="t-achados" style="display:flex;flex-direction:column;gap:16px">
 <div class="filtros"><h2 id="t-achados" style="margin:0">Achados para revisar</h2>
 <div class="linha" role="group" aria-label="Filtrar por severidade" id="filtros"></div></div>
 <div id="lista" style="display:flex;flex-direction:column;gap:16px"></div>
 </section>
 <div class="linha"><button type="button" class="cta" id="baixar">Baixar decisões</button>
-<span class="meta" style="color:var(--cinza)">Salve o arquivo em dados/decisoes.json para a próxima execução levar as decisões em conta.</span></div>
+<span class="meta" style="color:var(--cinza)">Suba o arquivo na pasta dados/decisoes/ do repositório para a próxima execução levar as decisões em conta.</span></div>
 </main>
 <script>
 const EXEC = __DADOS__;
@@ -145,6 +163,18 @@ function render(){
   document.getElementById("k-rev").textContent = rev + " de " + total;
   document.getElementById("k-custo").textContent = "US$ " + EXEC.custo.total_usd.toFixed(2);
   const ul = document.getElementById("resumo"); ul.replaceChildren(...EXEC.resumo.map(f => el("li", {text:f})));
+  const calib = EXEC.calibragem || [];
+  document.getElementById("calib").hidden = !calib.length;
+  document.getElementById("calib-linhas").replaceChildren(...calib.map(c => {
+    const barra = el("span", {class:"barra"}, [el("i", {class:c.calibrar ? "alerta" : "", style:"width:" + Math.round(c.taxa * 100) + "%"})]);
+    return el("tr", {}, [
+      el("td", {}, [el("span", {class:"codigo", text:c.codigo + " "}), document.createTextNode(c.titulo)]),
+      el("td", {class:"num", text:String(c.decididos)}),
+      el("td", {class:"num", text:String(c.descartados)}),
+      el("td", {}, [barra, document.createTextNode(Math.round(c.taxa * 100) + "%")]),
+      el("td", {}, c.calibrar ? [el("span", {class:"pill alta", text:"Revisar a regra"})] : []),
+    ]);
+  }));
 
   const filtros = document.getElementById("filtros");
   filtros.replaceChildren(...[["todas","Todas"],["alta","Alta"],["media","Média"],["baixa","Baixa"]].map(([k, r]) =>
@@ -175,9 +205,14 @@ function render(){
 }
 
 document.getElementById("baixar").addEventListener("click", () => {
-  const saida = Object.entries(decisoes).filter(([, d]) => d.decisao).map(([id, d]) => ({id, ...d}));
+  // Leva junto o contexto do achado: o histórico precisa se explicar sozinho para virar exemplo.
+  const porId = Object.fromEntries(EXEC.achados.map(a => [a.id, a]));
+  const saida = Object.entries(decisoes).filter(([, d]) => d.decisao).map(([id, d]) => {
+    const x = porId[id] || {};
+    return {id, codigo:x.codigo, titulo:x.titulo, evidencia:x.evidencia, recomendacao:x.recomendacao, execucao:EXEC.gerado_em, ...d};
+  });
   const blob = new Blob([JSON.stringify(saida, null, 2)], {type:"application/json"});
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "decisoes.json"; a.click();
+  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = "decisoes-" + EXEC.gerado_em.slice(0, 10) + ".json"; a.click();
 });
 render();
 </script>

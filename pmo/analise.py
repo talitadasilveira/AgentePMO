@@ -17,6 +17,9 @@ Para cada achado:
 - escreva uma recomendação concreta e curta (quem precisa fazer o quê);
 - diga em uma frase qual é o impacto se nada for feito.
 Escreva também um resumo de no máximo 3 frases para a área de projetos, começando pelo maior risco.
+Se vierem decisões anteriores da área de projetos, siga o mesmo critério: quando a área costuma
+descartar ou aceitar um tipo de achado por um motivo que também vale aqui, diga isso na recomendação
+e reduza a severidade; quando costuma aprovar, mantenha.
 Use só os fatos dos achados; não invente datas, nomes ou números. Escreva em português do Brasil.
 Responda apenas com JSON neste formato:
 {"resumo": ["frase", "frase"],
@@ -35,7 +38,12 @@ PADRAO = {
 }
 
 
-def analisar(achados: list, medidor) -> dict:
+def com_processo(sistema: str, processo: str) -> str:
+    """O processo da área entra no prompt de sistema, que fica em cache entre execuções."""
+    return f"{sistema}\n\nProcesso da área (use para interpretar e recomendar):\n{processo}" if processo else sistema
+
+
+def analisar(achados: list, medidor, processo: str = "", exemplos: list | None = None) -> dict:
     if not achados:
         return {"resumo": ["Nenhum achado nesta execução."], "achados": []}
     enxuto = [
@@ -43,7 +51,10 @@ def analisar(achados: list, medidor) -> dict:
         for a in achados
     ]
     conteudo = "Achados desta execução:\n" + json.dumps(enxuto, ensure_ascii=False, indent=1)
-    return perguntar("analise", MODELO_ANALISE, SISTEMA, conteudo, medidor,
+    if exemplos:
+        conteudo += ("\n\nDecisões anteriores da área de projetos em achados do mesmo tipo:\n"
+                     + json.dumps(exemplos, ensure_ascii=False, indent=1))
+    return perguntar("analise", MODELO_ANALISE, com_processo(SISTEMA, processo), conteudo, medidor,
                      esforco="medium", max_tokens=16000)
 
 
